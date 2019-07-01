@@ -4,22 +4,26 @@ import org.flowable.engine.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.InputStream;
 import java.util.Map;
 
 /**
  * @author gumingyang
- * @description 读取流程配置文件
+ * @description 读取流程配置文件,这里把所有的实例化对象交由spring管理。我们不用手动的去关闭和开启
  * @date 2019/6/28 10:36
  **/
-public class BpmnTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:flowable-context.xml")
+public class BpmnSpringTest {
     ProcessEngine defaultProcessEngine;
     @Before
     public void initException(){
         if(defaultProcessEngine == null){
-            InputStream resourceAsStream = BpmnSpringTest.class.getClassLoader().getResourceAsStream("flowable.cfg.xml");
-            defaultProcessEngine = ProcessEngineConfiguration.createProcessEngineConfigurationFromInputStream(resourceAsStream).buildProcessEngine();
+            defaultProcessEngine = ProcessEngines.getDefaultProcessEngine();
         }
     }
     @Test
@@ -59,21 +63,5 @@ public class BpmnTest {
             Object idmTest = beans.get("idmTest");
             System.out.println(idmTest);
         }
-       // Assert.notNull(null,"不能为null");
-        /**
-         * 这里获取不到数据的不允许这么操作
-         */
-//        Set<Map.Entry<Object, Object>> entries = beans.entrySet();
-//        entries.forEach(item->{
-//            System.out.println(item.getKey());
-//            System.out.println(item.getValue());
-//        });
-
-
-
-    }
-    @After
-    public void close(){
-        defaultProcessEngine.close();
     }
 }
